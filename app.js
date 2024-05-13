@@ -21,8 +21,15 @@ app.use(express.json());
 
 app.use('/api/users', userRoutes);
 
+const productRoutes = require('./routes/productRoutes');
+app.use('/api', productRoutes);
+
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+
+
+app.use(express.json()); // Middleware para parsear JSON
