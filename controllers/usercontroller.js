@@ -21,26 +21,6 @@ exports.updateUser = async (req, res) => {
     }
 };
 
-exports.createUser = async (req, res) => {
-    const { password, ...userData } = req.body;
-
-    try {
-        // Encrypt password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        const user = new User({ ...userData, password: hashedPassword });
-        await user.save();
-
-        // Generate JWT
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-        res.status(201).send({ user, token });
-    } catch (error) {
-        res.status(500).send(error);
-    }
-};
-
 exports.getUser = async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
@@ -65,26 +45,76 @@ exports.deleteUser = async (req, res) => {
     }
 };
 
+// Registrar usuario
+exports.createUser = async (req, res) => {
+    const { firstName, lastName, middleName, email, password, phone, role, address } = req.body;
+    try {
+        let user = await User.findOne({ email });
+        if (user) {
+            return res.status(400).json({ msg: 'El usuario ya existe' });
+        }
+
+        user = new User({
+            firstName,
+            lastName,
+            middleName,
+            email,
+            password,
+            phone,
+            role,
+            address
+        });
+
+        await user.save();
+        console.log('Contraseña encriptada al crear el usuario:', user.password);
+
+        const payload = {
+            user: {
+                id: user.id
+            }
+        };
+
+        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 360000 }, (err, token) => {
+            if (err) throw err;
+            res.json({ token });
+        });
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error de Server');
+    }
+};
+
+// Iniciar sesión
 exports.loginUser = async (req, res) => {
     const { email, password } = req.body;
-
     try {
-        const user = await User.findOne({ email });
+        let user = await User.findOne({ email });
         if (!user) {
-            return res.status(404).send({ message: 'User not found' });
+            console.log('Usuario no encontrado');
+            return res.status(400).json({ msg: 'Credenciales Inválidas' });
         }
 
-        // Check password
         const isMatch = await bcrypt.compare(password, user.password);
+
+
         if (!isMatch) {
-            return res.status(400).send({ message: 'Invalid credentials' });
+            return res.status(400).json({ msg: 'Credenciales Inválidas' });
         }
 
-        // Generate JWT
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const payload = {
+            user: {
+                id: user.id
+            }
+        };
 
-        res.send({ user, token });
-    } catch (error) {
-        res.status(500).send(error);
+        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 360000 }, (err, token) => {
+            if (err) throw err;
+            res.json({ token, userId: user.id });
+        });
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error de Server');
     }
 };

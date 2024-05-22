@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const connectDB = require('./db/db');
 const userRoutes = require('./routes/userRoutes');
 const cartRoutes = require('./routes/cartRoutes');
+const auth = require('./middleware/auth');
 
 
 require('dotenv').config();
@@ -28,7 +29,7 @@ app.use('/api', productRoutes);
 app.use('/api', cartRoutes);
 
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
