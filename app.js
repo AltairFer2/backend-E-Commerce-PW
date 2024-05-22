@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const connectDB = require('./db/db');
 const userRoutes = require('./routes/userRoutes');
+const cartRoutes = require('./routes/cartRoutes');
 
 
 require('dotenv').config();
@@ -23,6 +24,8 @@ app.use('/api/users', userRoutes);
 
 const productRoutes = require('./routes/productRoutes');
 app.use('/api', productRoutes);
+
+app.use('/api', cartRoutes);
 
 
 const PORT = process.env.PORT || 5000;
