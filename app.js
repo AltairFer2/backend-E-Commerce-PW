@@ -4,6 +4,7 @@ const connectDB = require('./db/db');
 const userRoutes = require('./routes/userRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const auth = require('./middleware/auth');
+const cors = require('cors');
 
 
 require('dotenv').config();
@@ -14,6 +15,7 @@ dotenv.config();
 connectDB();
 
 const app = express();
+app.use(cors());
 
 const orderRoutes = require('./routes/orderRoutes');
 app.use('/api', orderRoutes);
