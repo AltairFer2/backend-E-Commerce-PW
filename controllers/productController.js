@@ -11,9 +11,6 @@ exports.createProduct = async (req, res) => {
     }
 };
 
-
-
-
 exports.getProduct = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
@@ -21,6 +18,26 @@ exports.getProduct = async (req, res) => {
             return res.status(404).send();
         }
         res.send(product);
+    } catch (error) {
+        res.status(500).send(error);
+    }
+};
+
+exports.getProducts = async (req, res) => {
+    try {
+        const products = await Product.find();
+        res.send(products);
+    } catch (error) {
+        res.status(500).send(error);
+    }
+};
+
+exports.getProductsByCategory = async (req, res) => {
+    const { category } = req.params;
+
+    try {
+        const products = await Product.find({ category });
+        res.send(products);
     } catch (error) {
         res.status(500).send(error);
     }
