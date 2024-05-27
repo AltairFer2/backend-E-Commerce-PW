@@ -1,7 +1,7 @@
 // controllers/productController.js
 const Product = require('../models/Product');
 const formidable = require('formidable');
-const { s3Client } = require('./s3Client');
+const { s3Client } = require('../services/s3Client');
 
 exports.createProduct = (req, res) => {
     const form = new formidable.IncomingForm();
