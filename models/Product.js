@@ -33,7 +33,8 @@ const ProductSchema = new mongoose.Schema({
     brand: { type: String, required: true },
     specifications: SpecificationsSchema,
     price: { type: Number, required: true },
-    stock: { type: Number, required: true }
+    stock: { type: Number, required: true },
+    images: [String],
 }, { timestamps: true });
 
 const Product = mongoose.model('Product', ProductSchema);
